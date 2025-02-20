@@ -1,0 +1,19 @@
+{
+  "name": "task-management-backend",
+  "version": "1.0.0",
+  "description": "It is the backend which is receive requests from the client side of Task Management With React. When, finish the process then send a response.",
+  "license": "ISC",
+  "author": "SS Mahim",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongodb": "^6.13.0"
+  }
+}
