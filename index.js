@@ -31,15 +31,29 @@ async function run() {
     // Get Users
     app.get("/users", async(req, res) => {
         const findUsers = userCollection.find({});
-        const result = findUsers.toArray();
+        const result = await findUsers.toArray();
         res.send(result);
+    });
+
+    // Post User
+    app.post("/user", async(req, res) => {
+        const userInfo = req.body;
+        const insertResult = await userCollection.insertOne(userInfo);
+        res.send(insertResult);
     });
 
     // Get All Tasks
     app.get("/tasks", async(req, res) => {
         const findTasks = taskCollection.find({});
-        const result = findTasks.toArray();
+        const result = await findTasks.toArray();
         res.send(result);
+    });
+
+    // Post Task
+    app.post("/task", async(req, res) => {
+        const taskData = req.body;
+        const insertResult = await taskCollection.insertOne(taskData);
+        res.send(insertResult);
     });
 
     // Send a ping to confirm a successful connection
