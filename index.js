@@ -26,6 +26,21 @@ async function run() {
 
     const taskFlowDB = client.db("taskFlowDB");
     const taskCollection = taskFlowDB.collection("allTasks");
+    const userCollection = taskFlowDB.collection("allUsers");
+
+    // Get Users
+    app.get("/users", async(req, res) => {
+        const findUsers = userCollection.find({});
+        const result = findUsers.toArray();
+        res.send(result);
+    });
+
+    // Get All Tasks
+    app.get("/tasks", async(req, res) => {
+        const findTasks = taskCollection.find({});
+        const result = findTasks.toArray();
+        res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
