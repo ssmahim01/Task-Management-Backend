@@ -37,20 +37,30 @@ async function run() {
 
     // Post User
     app.post("/user", async(req, res) => {
+        console.log(req.body);
         const userInfo = req.body;
+        const id = {userID: userInfo.userID};
+        const existedUser = await userCollection.findOne(id);
+
+        if(existedUser){
+          return res.send({message: "User already exists", insertedId: null});
+        }
+
         const insertResult = await userCollection.insertOne(userInfo);
         res.send(insertResult);
     });
 
     // Get All Tasks
     app.get("/tasks", async(req, res) => {
-        const findTasks = taskCollection.find({});
+      const uid = req.query.uid;
+      const query = {UserID: uid}
+        const findTasks = taskCollection.find(query);
         const result = await findTasks.toArray();
         res.send(result);
     });
 
     // Post Task
-    app.post("/task", async(req, res) => {
+    app.post("/tasks", async(req, res) => {
         const taskData = req.body;
         const insertResult = await taskCollection.insertOne(taskData);
         res.send(insertResult);
