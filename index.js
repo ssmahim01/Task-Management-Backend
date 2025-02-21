@@ -66,7 +66,7 @@ async function run() {
       res.send(insertResult);
     });
 
-    // Update Task
+    // Update draggable content of Task
     app.put("/tasks/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -100,6 +100,27 @@ async function run() {
       // Update the moved task's category and index
       const updateResult = await taskCollection.updateOne(query, updateTask);
       res.send(updateResult);
+    });
+
+    app.put("/tasks/:id", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const { Category } = req.body;
+
+      const updateCategory = {
+        $set: {Category}
+      }
+
+      const updateResult = await taskCollection.updateOne(query, updateCategory);
+      res.send(updateResult);
+    });
+
+    app.delete("/tasks/:id", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const deleteResult = await taskCollection.deleteOne(query);
+      res.send(deleteResult);
     });
 
     // Send a ping to confirm a successful connection
