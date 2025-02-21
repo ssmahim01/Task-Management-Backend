@@ -35,9 +35,9 @@ async function run() {
       res.send(result);
     });
 
-    // Post User
+    // Post A User
     app.post("/user", async (req, res) => {
-      console.log(req.body);
+      // console.log(req.body);
       const userInfo = req.body;
       const id = { userID: userInfo.userID };
       const existedUser = await userCollection.findOne(id);
@@ -59,15 +59,24 @@ async function run() {
       res.send(result);
     });
 
-    // Post Task
+    // Get Dynamic Task
+    app.get("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const findResult = await taskCollection.findOne(query);
+      res.send(findResult);
+    });
+
+    // Post A Task
     app.post("/tasks", async (req, res) => {
       const taskData = req.body;
       const insertResult = await taskCollection.insertOne(taskData);
       res.send(insertResult);
     });
 
-    // Update draggable content of Task
-    app.put("/tasks/:id", async (req, res) => {
+    // Update Draggable Content Of Task
+    app.put("/task-move/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const { Category, newIndex } = req.body;
@@ -77,7 +86,7 @@ async function run() {
         return res.status(404).send({ message: "Task not found" });
       }
 
-      const tasksInCategory = await taskCollection.find({Category}).sort({index: 1}).toArray();
+      const tasksInCategory = await taskCollection.find({ Category }).sort({ index: 1 }).toArray();
 
       // Remove the moved task from its old position
       const filteredTasks = tasksInCategory.filter((t) => t._id.toString() !== id);
@@ -96,26 +105,42 @@ async function run() {
       const updateTask = {
         $set: { Category, index: newIndex }
       }
-      
+
       // Update the moved task's category and index
       const updateResult = await taskCollection.updateOne(query, updateTask);
       res.send(updateResult);
     });
 
-    app.put("/tasks/:id", async(req, res) => {
+    // Update A Task
+    app.put("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateData = req.body;
+
+      const updatedDoc = {
+        $set: updateData
+      }
+
+      const updateResult = await taskCollection.updateOne(query, updatedDoc);
+      res.send(updateResult);
+    });
+
+    // Update A Category
+    app.put("/task-category/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const { Category } = req.body;
 
       const updateCategory = {
-        $set: {Category}
+        $set: { Category }
       }
 
       const updateResult = await taskCollection.updateOne(query, updateCategory);
       res.send(updateResult);
     });
 
-    app.delete("/tasks/:id", async(req, res) => {
+    // Delete A Task
+    app.delete("/tasks/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
 
@@ -124,8 +149,8 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
