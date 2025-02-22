@@ -16,7 +16,7 @@ Task Management Backend is a simple server for client side of TaskFlow. This bac
 <br>
 🔗 [TaskFlow Live on Firebase](https://task-flow-25.web.app)
 
-## 📁 Backend Repository
+## 📁 Client Repository
 
 🔗 [TaskFlow Client](https://github.com/ssmahim01/Task-Management-With-React)
 
