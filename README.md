@@ -70,7 +70,11 @@ DB_URI="Push Your MongoDB URI Form The Clusters Of MongoDB Atlas"
 
 ## 🎯 Features
 ✅ Get dynamically users and tasks data
+<br>
 ✅ Insert users information into the MongoDB
+<br>
 ✅ Update tasks via PUT request
+<br>
 ✅ Update category and move task via PUT request
+<br>
 ✅ Delete a specific task
