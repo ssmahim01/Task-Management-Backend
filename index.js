@@ -78,38 +78,41 @@ async function run() {
     // Update Draggable Content Of Task
     app.put("/task-move/:id", async (req, res) => {
       const id = req.params.id;
+      const { Category: newCategory, newIndex } = req.body;
+      
       const query = { _id: new ObjectId(id) };
-      const { Category, newIndex } = req.body;
-
       const task = await taskCollection.findOne(query);
+      
       if (!task) {
-        return res.status(404).send({ message: "Task not found" });
+          return res.status(404).send({ message: "Task not found" });
       }
-
-      const tasksInCategory = await taskCollection.find({ Category }).sort({ index: 1 }).toArray();
-
-      // Remove the moved task from its old position
-      const filteredTasks = tasksInCategory.filter((t) => t._id.toString() !== id);
-
-      // Insert the task at its new position
-      filteredTasks.splice(newIndex, 0, task);
-
-      // Update the index of all tasks in the category
-      for (let i = 0; i < filteredTasks.length; i++) {
-        await taskCollection.updateOne(
-          { _id: new ObjectId(filteredTasks[i]._id) },
-          { $set: { index: i } }
-        );
-      }
-
-      const updateTask = {
-        $set: { Category, index: newIndex }
-      }
-
-      // Update the moved task's category and index
-      const updateResult = await taskCollection.updateOne(query, updateTask);
-      res.send(updateResult);
-    });
+  
+      const oldCategory = task.Category;
+  
+      // Remove task from old category and re-index remaining tasks
+      await taskCollection.updateMany(
+          { Category: oldCategory, index: { $gt: task.index } },
+          { $inc: { index: -1 } }
+      );
+  
+      // Get current tasks in the new category and adjust indexes
+      const newCategoryTasks = await taskCollection.find({ Category: newCategory }).sort({ index: 1 }).toArray();
+  
+      // Insert the task at the correct position
+      newCategoryTasks.splice(newIndex, 0, task);
+  
+      // Update all indexes in the new category
+      const updatePromises = newCategoryTasks.map((t, i) =>
+          taskCollection.updateOne(
+              { _id: new ObjectId(t._id) },
+              { $set: { index: i, Category: newCategory } }
+          )
+      );
+  
+      await Promise.all(updatePromises);
+  
+      res.status(200).send({ message: "Task moved successfully" });
+  });  
 
     // Update A Task
     app.put("/tasks/:id", async (req, res) => {
